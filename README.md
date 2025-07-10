@@ -1,56 +1,41 @@
-# Deep Code Reasoning MCP Server
+# Design Critique MCP Server
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-green.svg)](https://modelcontextprotocol.com)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org)
 
-An MCP server that pairs Claude Code with Google's Gemini AI for complementary code analysis. This server enables a multi-model workflow where Claude Code handles tight terminal integration and multi-file refactoring, while Gemini leverages its massive context window (1M tokens) and code execution capabilities for distributed system debugging and long-trace analysis.
-
-## Core Value
-
-Both Claude and Gemini can handle deep semantic reasoning and distributed system bugs. This server enables an intelligent routing strategy where:
-- **Claude Code** excels at local-context operations, incremental patches, and CLI-native workflows
-- **Gemini 2.5 Pro** shines with huge-context sweeps, synthetic test execution, and analyzing failures that span logs + traces + code
-
-The "escalation" model treats LLMs like heterogeneous microservices - route to the one that's most capable for each sub-task.
+A Model Context Protocol (MCP) server that provides comprehensive visual design analysis and critique capabilities. This server enables AI assistants to analyze design images for composition, color harmony, typography, and accessibility compliance.
 
 ## Features
 
-- **Gemini 2.5 Pro Preview**: Uses Google's latest Gemini 2.5 Pro Preview (05-06) model with 1M token context window
-- **Conversational Analysis**: NEW! AI-to-AI dialogues between Claude and Gemini for iterative problem-solving
-- **Execution Flow Tracing**: Understands data flow and state transformations, not just function calls
-- **Cross-System Impact Analysis**: Models how changes propagate across service boundaries
-- **Performance Modeling**: Identifies N+1 patterns, memory leaks, and algorithmic bottlenecks
-- **Hypothesis Testing**: Tests theories about code behavior with evidence-based validation
-- **Long Context Support**: Leverages Gemini 2.5 Pro Preview's 1M token context for analyzing large codebases
+- **Comprehensive Design Critique**: Analyzes overall design quality with actionable recommendations
+- **Color Analysis**: Extracts color palettes, analyzes harmony, and checks contrast ratios
+- **Composition Analysis**: Evaluates visual balance, grid alignment, and layout structure
+- **Typography Analysis**: Assesses font hierarchy, readability, and consistency
+- **Accessibility Compliance**: WCAG 2.1 compliance checking with color blindness simulation
+- **Multi-Format Support**: Works with web, mobile, print, and general design formats
+- **Real-time Analysis**: Fast image processing with optimized algorithms
 
 ## Prerequisites
 
 - Node.js 18 or later
-- A Google Cloud account with Gemini API access
-- Gemini API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
-
-## Key Dependencies
-
-- **@google/generative-ai**: Google's official SDK for Gemini API integration
-- **@modelcontextprotocol/sdk**: MCP protocol implementation for Claude integration
-- **zod**: Runtime type validation for tool parameters
-- **dotenv**: Environment variable management
+- npm or yarn package manager
+- Canvas dependencies (automatically installed)
 
 ## Installation
 
 ### Quick Install for Cursor
 
-[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=deep-code-reasoning&config=eyJjb21tYW5kIjoibm9kZSIsImFyZ3MiOlsiL3BhdGgvdG8vZGVlcC1jb2RlLXJlYXNvbmluZy1tY3AvZGlzdC9pbmRleC5qcyJdLCJlbnYiOnsiR0VNSU5JX0FQSV9LRVkiOiJ5b3VyLWdlbWluaS1hcGkta2V5In19)
+[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=design-critique&config=eyJjb21tYW5kIjoibm9kZSIsImFyZ3MiOlsiL3BhdGgvdG8vZGVzaWduLWNyaXRpcXVlLW1jcC9kaXN0L2luZGV4LmpzIl19)
 
-*Note: After installation, you'll need to update the file path to your actual installation directory and set your `GEMINI_API_KEY`.*
+*Note: After installation, update the file path to your actual installation directory.*
 
 ### Manual Installation
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/Haasonsaas/deep-code-reasoning-mcp.git
-cd deep-code-reasoning-mcp
+git clone https://github.com/haasonsaas/design-critique-mcp.git
+cd design-critique-mcp
 ```
 
 2. Install dependencies:
@@ -58,22 +43,12 @@ cd deep-code-reasoning-mcp
 npm install
 ```
 
-3. Set up your Gemini API key:
-```bash
-cp .env.example .env
-# Edit .env and add your GEMINI_API_KEY
-```
-
-4. Build the project:
+3. Build the project:
 ```bash
 npm run build
 ```
 
 ## Configuration
-
-### Environment Variables
-
-- `GEMINI_API_KEY` (required): Your Google Gemini API key
 
 ### Claude Desktop Configuration
 
@@ -82,230 +57,153 @@ Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/
 ```json
 {
   "mcpServers": {
-    "deep-code-reasoning": {
+    "design-critique": {
       "command": "node",
-      "args": ["/path/to/deep-code-reasoning-mcp/dist/index.js"],
-      "env": {
-        "GEMINI_API_KEY": "your-gemini-api-key"
-      }
+      "args": ["/path/to/design-critique-mcp/dist/index.js"]
     }
   }
 }
 ```
 
-## How It Works
-
-1. **Claude Code performs initial analysis** using its strengths in multi-file refactoring and test-driven loops
-2. **When beneficial, Claude escalates to this MCP server** - particularly for:
-   - Analyzing gigantic log/trace dumps that exceed Claude's context
-   - Running iterative hypothesis testing with code execution
-   - Correlating failures across many microservices
-3. **Server prepares comprehensive context** including code, logs, and traces
-4. **Gemini analyzes with its 1M-token context** and visible "thinking" traces
-5. **Results returned to Claude Code** for implementation of fixes
-
 ## Available Tools
 
-**Note**: The tool parameters use snake_case naming convention and are validated using Zod schemas. The actual implementation provides more detailed type safety than shown in these simplified examples. Full TypeScript type definitions are available in `src/models/types.ts`.
+### critique_design
+Provides comprehensive design critique with visual analysis including composition, color harmony, typography, and accessibility.
 
-### Conversational Analysis Tools
+**Parameters:**
+- `image_data` (required): Base64 encoded image data
+- `design_type`: Type of design - `"web"`, `"mobile"`, `"print"`, or `"general"` (default: `"web"`)
+- `target_audience`: Target audience description (optional)
+- `brand_guidelines`: Brand guidelines object (optional)
+  - `colors`: Array of brand colors in hex format
+  - `fonts`: Array of brand font names
 
-The server now includes AI-to-AI conversational tools that enable Claude and Gemini to engage in multi-turn dialogues for complex analysis:
+**Returns:** Comprehensive analysis including:
+- Overall score (0-100)
+- Composition analysis with balance and grid alignment
+- Color analysis with harmony score and palette
+- Typography assessment with hierarchy and readability scores
+- Accessibility report with WCAG compliance
+- Actionable recommendations
 
-#### start_conversation
-Initiates a conversational analysis session between Claude and Gemini.
+### analyze_color_scheme
+Analyzes color palette and harmony in a design.
 
-```typescript
-{
-  claude_context: {
-    attempted_approaches: string[];      // What Claude tried
-    partial_findings: any[];            // What Claude found
-    stuck_description: string;          // Where Claude got stuck
-    code_scope: {
-      files: string[];                  // Files to analyze
-      entry_points?: CodeLocation[];    // Starting points
-      service_names?: string[];         // Services involved
-    }
-  };
-  analysis_type: 'execution_trace' | 'cross_system' | 'performance' | 'hypothesis_test';
-  initial_question?: string;            // Optional opening question
-}
-```
+**Parameters:**
+- `image_data` (required): Base64 encoded image data
 
-#### continue_conversation
-Continues an active conversation with Claude's response or follow-up question.
+**Returns:**
+- Dominant colors with hex codes
+- Color harmony analysis
+- Contrast issues
+- Color relationships (complementary, analogous, etc.)
 
-```typescript
-{
-  session_id: string;                   // Active session ID
-  message: string;                      // Claude's message to Gemini
-  include_code_snippets?: boolean;      // Enrich with code context
-}
-```
+### analyze_layout
+Analyzes visual composition and layout structure.
 
-#### finalize_conversation
-Completes the conversation and generates structured analysis results.
+**Parameters:**
+- `image_data` (required): Base64 encoded image data
+- `design_type`: Type of design - `"web"`, `"mobile"`, `"print"`, or `"general"` (default: `"web"`)
 
-```typescript
-{
-  session_id: string;                   // Active session ID
-  summary_format: 'detailed' | 'concise' | 'actionable';
-}
-```
+**Returns:**
+- Layout score (0-100)
+- Balance assessment (symmetrical/asymmetrical)
+- Grid alignment detection
+- Visual hierarchy analysis
+- White space evaluation
 
-#### get_conversation_status
-Checks the status and progress of an ongoing conversation.
+### analyze_typography
+Analyzes typography hierarchy, readability, and font usage.
 
-```typescript
-{
-  session_id: string;                   // Session ID to check
-}
-```
+**Parameters:**
+- `image_data` (required): Base64 encoded image data
 
-### Traditional Analysis Tools
+**Returns:**
+- Font count and families detected
+- Hierarchy score (0-100)
+- Readability score (0-100)
+- Typography issues and recommendations
 
-#### escalate_analysis
-Main tool for handing off complex analysis from Claude Code to Gemini.
+### analyze_accessibility
+Analyzes design accessibility including contrast, color blindness, and WCAG compliance.
 
-```typescript
-{
-  claude_context: {
-    attempted_approaches: string[];      // What Claude tried
-    partial_findings: any[];            // What Claude found
-    stuck_description: string;          // Where Claude got stuck
-    code_scope: {
-      files: string[];                  // Files to analyze
-      entry_points?: CodeLocation[];    // Starting points (file, line, function_name)
-      service_names?: string[];         // Services involved
-    }
-  };
-  analysis_type: 'execution_trace' | 'cross_system' | 'performance' | 'hypothesis_test';
-  depth_level: 1-5;                     // Analysis depth
-  time_budget_seconds?: number;         // Time limit (default: 60)
-}
-```
+**Parameters:**
+- `image_data` (required): Base64 encoded image data
 
-### trace_execution_path
-Deep execution analysis with Gemini's semantic understanding.
+**Returns:**
+- Accessibility score (0-100)
+- Contrast ratio checks
+- Color blindness simulation results
+- WCAG compliance issues
+- Accessibility recommendations
 
-```typescript
-{
-  entry_point: {
-    file: string;
-    line: number;
-    function_name?: string;
-  };
-  max_depth?: number;              // Default: 10
-  include_data_flow?: boolean;     // Default: true
-}
-```
+### check_color_contrast
+Checks contrast ratio between two specific colors.
 
-### cross_system_impact
-Analyze impacts across service boundaries.
+**Parameters:**
+- `foreground` (required): Foreground color in hex format (e.g., "#000000")
+- `background` (required): Background color in hex format (e.g., "#ffffff")
 
-```typescript
-{
-  change_scope: {
-    files: string[];
-    service_names?: string[];
-  };
-  impact_types?: ('breaking' | 'performance' | 'behavioral')[];
-}
-```
+**Returns:**
+- Contrast ratio
+- WCAG AA compliance (pass/fail)
+- WCAG AAA compliance (pass/fail)
+- Recommended use cases
 
-### performance_bottleneck
-Deep performance analysis beyond simple profiling.
+## Example Usage
 
-```typescript
-{
-  code_path: {
-    entry_point: {
-      file: string;
-      line: number;
-      function_name?: string;
-    };
-    suspected_issues?: string[];
-  };
-  profile_depth?: 1-5;              // Default: 3
-}
-```
-
-### hypothesis_test
-Test specific theories about code behavior.
-
-```typescript
-{
-  hypothesis: string;
-  code_scope: {
-    files: string[];
-    entry_points?: CodeLocation[];    // Optional array of {file, line, function_name?}
-  };
-  test_approach: string;
-}
-```
-
-## Example Use Cases
-
-### Conversational Analysis Example
-
-When Claude needs deep iterative analysis with Gemini:
-
+### Basic Design Critique
 ```javascript
-// 1. Start conversation
-const session = await start_conversation({
-  claude_context: {
-    attempted_approaches: ["Checked for N+1 queries", "Profiled database calls"],
-    partial_findings: [{ type: "performance", description: "Multiple DB queries in loop" }],
-    stuck_description: "Can't determine if queries are optimizable",
-    code_scope: { files: ["src/services/UserService.ts"] }
-  },
-  analysis_type: "performance",
-  initial_question: "Are these queries necessary or can they be batched?"
-});
-
-// 2. Continue with follow-ups
-const response = await continue_conversation({
-  session_id: session.sessionId,
-  message: "The queries fetch user preferences. Could we use a join instead?",
-  include_code_snippets: true
-});
-
-// 3. Finalize when ready
-const results = await finalize_conversation({
-  session_id: session.sessionId,
-  summary_format: "actionable"
+// In Claude Desktop
+const result = await critique_design({
+  image_data: "base64_encoded_image_data_here",
+  design_type: "web",
+  target_audience: "Young professionals aged 25-35"
 });
 ```
 
-### Case 1: Distributed Trace Analysis
-
-When a failure signature spans multiple services with GB of logs:
-
+### Check Specific Color Contrast
 ```javascript
-// Claude Code: Identifies the error pattern and suspicious code sections
-// Escalate to Gemini when: Need to correlate 1000s of trace spans across 10+ services
-// Gemini: Processes the full trace timeline, identifies the exact race window
+const contrast = await check_color_contrast({
+  foreground: "#333333",
+  background: "#f0f0f0"
+});
+// Returns: { ratio: 11.2, passes_aa: true, passes_aaa: true }
 ```
 
-### Case 2: Performance Regression Hunting
-
-When performance degrades but the cause isn't obvious:
-
+### Analyze Mobile App Design
 ```javascript
-// Claude Code: Quick profiling, identifies hot paths
-// Escalate to Gemini when: Need to analyze weeks of performance metrics + code changes
-// Gemini: Correlates deployment timeline with perf metrics, pinpoints the exact commit
+const analysis = await critique_design({
+  image_data: "base64_encoded_image_data",
+  design_type: "mobile",
+  brand_guidelines: {
+    colors: ["#FF5722", "#00BCD4", "#FFC107"],
+    fonts: ["Roboto", "Open Sans"]
+  }
+});
 ```
 
-### Case 3: Hypothesis-Driven Debugging
+## Use Cases
 
-When you have theories but need extensive testing:
+### Design Reviews
+- Automated design quality assessment
+- Consistency checking across design systems
+- Pre-launch design validation
 
-```javascript
-// Claude Code: Forms initial hypotheses based on symptoms
-// Escalate to Gemini when: Need to test 20+ scenarios with synthetic data
-// Gemini: Uses code execution API to validate each hypothesis systematically
-```
+### Accessibility Auditing
+- WCAG compliance verification
+- Color contrast validation
+- Color blindness impact assessment
+
+### Design Education
+- Learning design principles through AI feedback
+- Understanding composition and color theory
+- Improving typography choices
+
+### Brand Compliance
+- Checking designs against brand guidelines
+- Ensuring consistent visual language
+- Validating color palette usage
 
 ## Development
 
@@ -325,61 +223,48 @@ npm run typecheck
 
 ## Architecture
 
+The server uses a modular architecture with specialized analyzers:
+
 ```
 ┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│  Claude Code    │────▶│  MCP Server      │────▶│  Gemini API    │
-│  (Fast, Local, │     │  (Router &       │     │  (1M Context,   │
-│   CLI-Native)  │◀────│   Orchestrator)  │◀────│   Code Exec)    │
-└─────────────────┘     └──────────────────┘     └─────────────────┘
-                               │
-                               ▼
-                        ┌──────────────────┐
-                        │  Code + Logs +   │
-                        │  Traces + Tests  │
-                        └──────────────────┘
+│  MCP Client     │────▶│  Design Analysis │────▶│   Analyzers     │
+│  (Claude)       │     │     Server       │     │  - Color        │
+│                 │◀────│                  │     │  - Composition  │
+└─────────────────┘     └──────────────────┘     │  - Typography   │
+                                                  │  - Accessibility│
+                                                  └─────────────────┘
 ```
 
-## Security Considerations
+## Image Processing
 
-- **API Key**: Store your Gemini API key securely in environment variables
-- **Code Access**: The server reads local files - ensure proper file permissions
-- **Data Privacy**: Code is sent to Google's Gemini API - review their data policies
+- Supports common image formats (PNG, JPEG, WebP)
+- Automatic image optimization for faster processing
+- Maximum image size: 10MB
+- Recommended resolution: 1920x1080 for web designs
+
+## Performance
+
+- Average analysis time: 2-5 seconds per image
+- Concurrent request handling
+- Memory-efficient image processing
+- Caching for repeated analyses
 
 ## Troubleshooting
 
-### "GEMINI_API_KEY not found"
-- Ensure you've set the `GEMINI_API_KEY` in your `.env` file or environment
-- Check that the `.env` file is in the project root
+### "Invalid image data"
+- Ensure the image is properly base64 encoded
+- Check that the image format is supported
+- Verify the image size is under 10MB
 
-### "File not found" errors
-- Verify that file paths passed to the tools are absolute paths
-- Check file permissions
+### "Canvas not found" error
+- Run `npm install canvas` to install native dependencies
+- On macOS: May need to install Cairo graphics library
+- On Linux: Install required system dependencies
 
-### Gemini API errors
-- Verify your API key is valid and has appropriate permissions
-- Check API quotas and rate limits
-- Ensure your Google Cloud project has the Gemini API enabled
-
-### Validation errors
-- The server uses Zod for parameter validation
-- Ensure all required parameters are provided
-- Check that parameter names use snake_case (e.g., `claude_context`, not `claudeContext`)
-- Review error messages for specific validation requirements
-
-## Best Practices for Multi-Model Debugging
-
-When debugging distributed systems with this MCP server:
-
-1. **Capture the timeline first** - Use OpenTelemetry/Jaeger traces with request IDs
-2. **Start with Claude Code** - Let it handle the initial investigation and quick fixes
-3. **Escalate strategically** to Gemini when you need:
-   - Analysis of traces spanning 100s of MB
-   - Correlation across 10+ services
-   - Iterative hypothesis testing with code execution
-4. **Combine with traditional tools**:
-   - `go test -race`, ThreadSanitizer for race detection
-   - rr or JFR for deterministic replay
-   - TLA+ or Alloy for formal verification
+### Analysis taking too long
+- Large images may take longer to process
+- Consider resizing images before analysis
+- Check system resources (CPU/memory)
 
 ## Contributing
 
@@ -395,17 +280,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Author
 
-**Jonathan Haas** - [GitHub Profile](https://github.com/Haasonsaas)
+**Jonathan Haas** - [GitHub Profile](https://github.com/haasonsaas)
 
 ## Acknowledgments
 
-- Built for integration with Anthropic's Claude Code
-- Powered by Google's Gemini AI
-- Uses the Model Context Protocol (MCP) for communication
+- Built for integration with Anthropic's Claude via MCP
+- Uses sharp for image processing
+- Powered by chroma-js for color analysis
+- Typography detection with Tesseract.js
+- Accessibility standards from WCAG 2.1
 
 ## Support
 
 If you encounter any issues or have questions:
-- Open an issue on [GitHub Issues](https://github.com/Haasonsaas/deep-code-reasoning-mcp/issues)
-- Check the [troubleshooting section](#troubleshooting) above
-- Review the [MCP documentation](https://modelcontextprotocol.com)
+- Open an issue on [GitHub Issues](https://github.com/haasonsaas/design-critique-mcp/issues)
+- Review the [troubleshooting section](#troubleshooting) above
+- Check the [MCP documentation](https://modelcontextprotocol.com)
