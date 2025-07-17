@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/haasonsaas-design-critique-mcp-badge.png)](https://mseep.ai/app/haasonsaas-design-critique-mcp)
+
 # Design Critique MCP Server
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
