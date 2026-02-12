@@ -41,7 +41,7 @@
     "canvas": "^3.1.2",
     "chroma-js": "^2.4.2",
     "jimp": "^0.22.0",
-    "node-vibrant": "^3.1.6",
+    "node-vibrant": "^4.0.3",
     "sharp": "^0.33.0",
     "tesseract.js": "^5.0.0",
     "uuid": "^11.1.0",
